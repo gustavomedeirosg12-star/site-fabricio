@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;500;600&family=Outfit:wght@300;400;500;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0A192F;
+  --color-secondary: #0057B7;
+  --color-background: #F4F7F9;
+  --color-text: #17202A;
+  --color-accent: #00D2D3;
+  
+  --font-sans: "Albert Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}
