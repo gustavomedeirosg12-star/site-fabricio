@@ -48,19 +48,14 @@ export default function App() {
     mensagem: ''
   });
 
-  const handleWhatsAppSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const { nome, servico, mensagem } = formData;
-    
-    // Constrói uma mensagem formatada profissionalmente
-    let text = `Olá, equipe Clima Perfeito! Vim pelo site. ❄️\n\n`;
-    if (nome) text += `Meu nome é *${nome.trim()}*.\n`;
-    text += `Tenho interesse no serviço de: *${servico}*.\n`;
-    if (mensagem) text += `\n*Detalhes do ambiente/problema:* \n${mensagem.trim()}`;
-    
-    const url = `https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
-  };
+  const isFormValid = formData.nome.trim().length > 1 && formData.telefone.trim().length > 8;
+
+  let generatedText = `Olá, equipe Clima Perfeito! Vim pelo site. ❄️\n\n`;
+  if (formData.nome) generatedText += `Meu nome é *${formData.nome.trim()}*.\n`;
+  generatedText += `Tenho interesse no serviço de: *${formData.servico}*.\n`;
+  if (formData.mensagem) generatedText += `\n*Detalhes do ambiente/problema:* \n${formData.mensagem.trim()}`;
+  
+  const generatedUrl = `https://wa.me/${PHONE}?text=${encodeURIComponent(generatedText)}`;
 
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
@@ -542,7 +537,7 @@ export default function App() {
 
             <FadeIn delay={0.2}>
               <div className="bg-background rounded-3xl p-8 md:p-12 border border-primary/5 shadow-xl shadow-primary/5">
-                <form className="space-y-6" onSubmit={handleWhatsAppSubmit}>
+                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label htmlFor="nome" className="text-sm font-semibold text-primary">Seu Nome</label>
@@ -599,13 +594,24 @@ export default function App() {
                     ></textarea>
                   </div>
 
-                  <button 
-                    type="submit"
-                    className="w-full h-14 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-secondary transition-all hover:scale-[1.02] active:scale-95 group"
-                  >
-                    Solicitar Orçamento no WhatsApp
-                    <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  </button>
+                  {isFormValid ? (
+                    <a 
+                      href={generatedUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full h-14 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-secondary transition-all hover:scale-[1.02] active:scale-95 group"
+                    >
+                      Solicitar Orçamento no WhatsApp
+                      <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </a>
+                  ) : (
+                    <div 
+                      className="w-full h-14 bg-primary/40 text-white rounded-xl font-bold flex items-center justify-center gap-2 cursor-not-allowed transition-all opacity-80"
+                    >
+                      Preencha Nome e Telefone
+                      <Send size={18} className="opacity-50" />
+                    </div>
+                  )}
                 </form>
               </div>
             </FadeIn>
