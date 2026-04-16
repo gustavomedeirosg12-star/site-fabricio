@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Menu, X, ChevronDown, CheckCircle2, Shield, Wrench, 
@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 const PHONE = '5534999716592';
-const WP_LINK = `https://wa.me/${PHONE}?text=${encodeURIComponent('Olá, gostaria de falar sobre climatização.')}`;
+const WP_LINK = `https://wa.me/${PHONE}?text=${encodeURIComponent('Olá, equipe Clima Perfeito! Estava navegando no site e gostaria de conversar com um especialista sobre climatização.')}`;
 const LOGO_URL = 'https://69d917505386887646d2db3b.imgix.net/WhatsApp%20Image%202026-04-15%20at%2012.20.44.jpeg';
 
 function FadeIn({ children, delay = 0, className = "" }: any) {
@@ -40,6 +40,28 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
+  // Form states para conversão avançada via WhatsApp
+  const [formData, setFormData] = useState({
+    nome: '',
+    telefone: '',
+    servico: 'Instalação Essencial',
+    mensagem: ''
+  });
+
+  const handleWhatsAppSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const { nome, servico, mensagem } = formData;
+    
+    // Constrói uma mensagem formatada profissionalmente
+    let text = `Olá, equipe Clima Perfeito! Vim pelo site. ❄️\n\n`;
+    if (nome) text += `Meu nome é *${nome.trim()}*.\n`;
+    text += `Tenho interesse no serviço de: *${servico}*.\n`;
+    if (mensagem) text += `\n*Detalhes do ambiente/problema:* \n${mensagem.trim()}`;
+    
+    const url = `https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  };
+
   const toggleFaq = (index: number) => {
     setActiveFaq(activeFaq === index ? null : index);
   };
@@ -63,7 +85,10 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-text font-sans selection:bg-accent selection:text-primary scroll-smooth">
+    <div className="min-h-screen bg-background text-text font-sans selection:bg-accent selection:text-primary scroll-smooth relative">
+      {/* Global Film Grain Overlay - Pentagram/Awwwards touch */}
+      <div className="pointer-events-none fixed inset-0 z-[999] h-full w-full opacity-[0.035] mix-blend-multiply" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
+
       <SignatureLine />
 
       {/* Floating CTA */}
@@ -140,18 +165,30 @@ export default function App() {
         <NoiseTexture />
         <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#00D2D310_1px,transparent_1px),linear-gradient(to_bottom,#00D2D310_1px,transparent_1px)] bg-[size:4rem_4rem] mix-blend-multiply opacity-[0.4]" />
         
+        {/* Ambient Glows - Editorial Tech touch */}
+        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-accent/20 rounded-full blur-[140px] pointer-events-none mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-secondary/15 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
+
         <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12 lg:gap-20">
           <div className="flex-1 w-full">
             <FadeIn>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-secondary/20 shadow-sm rounded-full text-[11px] font-semibold tracking-wider uppercase text-secondary mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                Alto Padrão em Climatização
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-secondary/20 shadow-sm rounded-full text-[11px] font-semibold tracking-wider uppercase text-secondary mb-6 relative hover:border-accent transition-colors duration-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping absolute left-3 opacity-75" />
+                <span className="w-1.5 h-1.5 rounded-full bg-accent ml-[2px]" />
+                <span className="ml-1">Alto Padrão em Climatização</span>
               </div>
             </FadeIn>
             
             <FadeIn delay={0.1}>
-              <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-primary mb-8 max-w-2xl">
-                Climatização de Alta Engenharia.
+              <span className="flex items-center gap-3 text-primary/70 font-mono text-xs md:text-sm uppercase tracking-[0.3em] mb-4">
+                <span className="w-10 h-[2px] bg-accent"></span>
+                Engenharia Térmica
+              </span>
+              <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-[5.5rem] leading-[0.98] tracking-tighter text-primary mb-6 max-w-[800px]">
+                Controle o clima. <br/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary via-secondary to-[#0057B7] relative inline-block mt-2">
+                  Domine o ambiente.
+                </span>
               </h1>
             </FadeIn>
             
@@ -200,6 +237,28 @@ export default function App() {
             </FadeIn>
           </div>
         </div>
+      </section>
+
+      {/* INFINITE MARQUEE - BRAND AUTHORITY */}
+      <section className="w-full py-10 border-y border-primary/5 bg-background relative overflow-hidden flex items-center">
+        {/* Gradient fades for seamless loop visually */}
+        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+        
+        <motion.div 
+          animate={{ x: ["0%", "-50%"] }} 
+          transition={{ repeat: Infinity, ease: "linear", duration: 35 }}
+          className="flex whitespace-nowrap items-center gap-16 md:gap-24 w-max px-8"
+        >
+          {/* Duplicando listagem de marcas para o loop infinito visualmente fluido... */}
+          {[...Array(2)].fill(['DAIKIN', 'FUJITSU', 'SAMSUNG', 'LG', 'MIDEA', 'GREE', 'CARRIER', 'TRANE']).flat().map((brand, i) => (
+            <span key={i} className="font-display font-medium text-2xl lg:text-4xl tracking-[0.15em] text-primary/10 uppercase flex items-center gap-16 md:gap-24">
+              {brand}
+              {/* Separador minimalista */}
+              <span className="w-2 h-2 rounded-full bg-accent/30"></span>
+            </span>
+          ))}
+        </motion.div>
       </section>
 
       {/* SERVIÇOS */}
@@ -483,36 +542,68 @@ export default function App() {
 
             <FadeIn delay={0.2}>
               <div className="bg-background rounded-3xl p-8 md:p-12 border border-primary/5 shadow-xl shadow-primary/5">
-                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                <form className="space-y-6" onSubmit={handleWhatsAppSubmit}>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-primary">Seu Nome</label>
-                      <input type="text" placeholder="Nome Completo" className="w-full h-14 bg-white border border-primary/10 rounded-xl px-4 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all" />
+                      <label htmlFor="nome" className="text-sm font-semibold text-primary">Seu Nome</label>
+                      <input 
+                        id="nome"
+                        type="text" 
+                        required
+                        value={formData.nome}
+                        onChange={(e) => setFormData({...formData, nome: e.target.value})}
+                        placeholder="Nome Completo" 
+                        className="w-full h-14 bg-white border border-primary/10 rounded-xl px-4 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-sans" 
+                      />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-primary">Telefone / WhatsApp</label>
-                      <input type="tel" placeholder="(00) 00000-0000" className="w-full h-14 bg-white border border-primary/10 rounded-xl px-4 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all" />
+                      <label htmlFor="telefone" className="text-sm font-semibold text-primary">Telefone / WhatsApp</label>
+                      <input 
+                        id="telefone"
+                        type="tel" 
+                        required
+                        value={formData.telefone}
+                        onChange={(e) => setFormData({...formData, telefone: e.target.value})}
+                        placeholder="(00) 00000-0000" 
+                        className="w-full h-14 bg-white border border-primary/10 rounded-xl px-4 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all font-sans" 
+                      />
                     </div>
                   </div>
                   
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-primary">Serviço Desejado</label>
-                    <select className="w-full h-14 bg-white border border-primary/10 rounded-xl px-4 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all appearance-none">
+                    <label htmlFor="servico" className="text-sm font-semibold text-primary">Serviço Desejado</label>
+                    <select 
+                      id="servico"
+                      value={formData.servico}
+                      onChange={(e) => setFormData({...formData, servico: e.target.value})}
+                      className="w-full h-14 bg-white border border-primary/10 rounded-xl px-4 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all appearance-none font-sans"
+                    >
                       <option>Instalação Essencial</option>
                       <option>Manutenção Preventiva</option>
                       <option>Limpeza e Higienização</option>
                       <option>Reparo Técnico / Conserto</option>
                       <option>Contratos para Empresas</option>
+                      <option>Projeto de Alta Complexidade (VRF/Dutos)</option>
                     </select>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-primary">Detalhes sobre o problema ou ambiente</label>
-                    <textarea rows={4} placeholder="Como podemos ajudar?" className="w-full bg-white border border-primary/10 rounded-xl px-4 py-4 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all resize-none"></textarea>
+                    <label htmlFor="mensagem" className="text-sm font-semibold text-primary">Detalhes sobre o problema ou ambiente</label>
+                    <textarea 
+                      id="mensagem"
+                      rows={4} 
+                      value={formData.mensagem}
+                      onChange={(e) => setFormData({...formData, mensagem: e.target.value})}
+                      placeholder="Ex: Sala comercial de 40m², o ar parou de gelar após queda de energia..." 
+                      className="w-full bg-white border border-primary/10 rounded-xl px-4 py-4 focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all resize-none font-sans"
+                    ></textarea>
                   </div>
 
-                  <button className="w-full h-14 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-secondary transition-all hover:scale-[1.02] active:scale-95 group">
-                    Solicitar Orçamento Agora 
+                  <button 
+                    type="submit"
+                    className="w-full h-14 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-secondary transition-all hover:scale-[1.02] active:scale-95 group"
+                  >
+                    Solicitar Orçamento no WhatsApp
                     <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                   </button>
                 </form>
