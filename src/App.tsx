@@ -268,27 +268,29 @@ function Home() {
       {/* ULTRA-CINEMATIC HERO */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden min-h-[85vh] lg:min-h-[95vh] flex items-center bg-[#020610] text-white">
         
-        {/* Cinematic Background Image with Zoom */}
-        <div className="absolute inset-0 z-0 overflow-hidden">
-          {/* Multiply overly for heavy contrast and darkness */}
-          <div className="absolute inset-0 bg-[#020610]/70 mix-blend-multiply z-10" />
+        {/* Cinematic Background Image with Zoom - OPTIMIZED */}
+        <div className="absolute inset-0 z-0 overflow-hidden transform-gpu">
+          {/* Overlays replacing mix-blend-mode for better performance */}
+          <div className="absolute inset-0 bg-[#020610]/85 z-10" />
           
-          {/* Cold glowing ambient lights drifting */}
-          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[600px] bg-accent/30 blur-[150px] rounded-full mix-blend-screen z-10 animate-[pulse_8s_ease-in-out_infinite]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[500px] bg-[#0057B7]/40 blur-[150px] rounded-full mix-blend-screen z-10 animate-[pulse_10s_ease-in-out_infinite_reverse]" />
+          {/* Cold glowing ambient lights - using radial-gradient instead of expensive blur() filters */}
+          <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[800px] bg-[radial-gradient(circle_at_center,rgba(0,185,222,0.15)_0%,transparent_60%)] z-10 animate-[pulse_8s_ease-in-out_infinite]" />
+          <div className="absolute bottom-[-10%] right-[-20%] w-[70%] h-[700px] bg-[radial-gradient(circle_at_center,rgba(0,87,183,0.2)_0%,transparent_60%)] z-10 animate-[pulse_10s_ease-in-out_infinite_reverse]" />
 
           {/* Vignette & Fade to next section */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#020610_100%)] opacity-80 z-10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-[#020610]/80 z-10" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#020610_100%)] opacity-80 z-10 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-[#020610]/90 z-10 pointer-events-none" />
           
           {/* Subtle tech grid over the image */}
-          <div className="absolute inset-0 z-10 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+          <div className="absolute inset-0 z-10 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
 
-          {/* Heavily blurred cinematic AC / Ventilation image */}
+          {/* Cinematic AC / Ventilation image - optimized without CSS blur */}
           <img 
-             src="https://images.unsplash.com/photo-1527018263595-5ae869094771?q=80&w=2600&auto=format&fit=crop" 
+             src="https://images.unsplash.com/photo-1527018263595-5ae869094771?q=40&w=1200&auto=format&fit=crop" 
              alt="Cinematic AC Unit" 
-             className="w-full h-full object-cover opacity-20 blur-[10px] animate-slow-zoom scale-110"
+             className="w-full h-full object-cover opacity-20 animate-slow-zoom scale-110 will-change-transform"
+             loading="eager"
+             fetchPriority="high"
           />
         </div>
 
