@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { 
   Menu, X, ChevronDown, CheckCircle2, Shield, Wrench, 
   ThermometerSnowflake, Droplets, PenTool, Star, MapPin, 
   MessageCircle, Phone, Instagram, Facebook, Send,
-  ArrowRight, Clock
+  ArrowRight, Clock, User
 } from 'lucide-react';
 
 const PHONE = '5534999716592';
@@ -37,10 +38,207 @@ const NoiseTexture = () => (
 );
 
 export default function App() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const location = useLocation();
 
-  // Form states para conversão avançada via WhatsApp
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        setTimeout(() => element.scrollIntoView({ behavior: 'smooth' }), 100);
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location]);
+
+  return (
+    <div className="min-h-screen bg-background text-text font-sans selection:bg-accent selection:text-primary scroll-smooth relative">
+      <SignatureLine />
+
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/faq" element={<FaqPage />} />
+      </Routes>
+      <Footer />
+
+      {/* Floating CTAs */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-4">
+        {/* Floating Call Button */}
+        <a 
+          href="tel:+5534999716592" 
+          className="flex items-center justify-center w-14 h-14 bg-gradient-to-tr from-accent to-[#0057B7] text-white rounded-full shadow-[0_15px_30px_rgba(0,185,222,0.3)] hover:shadow-[0_20px_40px_rgba(0,185,222,0.5)] hover:-translate-y-1 transition-all duration-300 pointer-events-auto border border-white/20 backdrop-blur-sm group"
+          aria-label="Ligar Agora"
+        >
+          <Phone size={24} className="relative z-10 group-hover:scale-110 transition-transform duration-300" />
+        </a>
+
+        {/* Floating WhatsApp Button */}
+        <a 
+          href={WP_LINK} 
+          target="_blank" 
+          rel="noreferrer"
+          className="flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-[#128C7E] to-[#25D366] text-white rounded-full shadow-[0_15px_30px_rgba(37,211,102,0.3)] hover:shadow-[0_20px_40px_rgba(37,211,102,0.5)] hover:-translate-y-1 transition-all duration-300 before:absolute before:inset-0 before:bg-white/20 before:rounded-full before:opacity-0 hover:before:opacity-100 border border-white/20 backdrop-blur-sm pointer-events-auto group relative"
+          aria-label="Falar no WhatsApp"
+        >
+          <span className="absolute inset-0 rounded-full animate-ping bg-[#25D366] opacity-20" />
+          <MessageCircle size={32} className="relative z-10 group-hover:scale-110 transition-transform duration-300" />
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleLinkClick = () => setIsMenuOpen(false);
+
+  return (
+      <header className={`fixed top-0 left-0 w-full z-40 transition-all duration-500 ${scrolled ? 'bg-white/90 backdrop-blur-md border-b border-primary/5 py-0 shadow-sm' : 'bg-white/50 backdrop-blur-sm py-4'}`}>
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3" onClick={handleLinkClick}>
+            <div className="w-10 h-10 rounded overflow-hidden shadow-sm">
+               <img src={LOGO_URL} alt="Clima Perfeito" className="w-full h-full object-cover" />
+            </div>
+            <span className={`font-display font-medium text-xl tracking-tight transition-colors ${scrolled ? 'text-primary' : 'text-white'}`}>Clima Perfeito</span>
+            <div className={`hidden lg:flex items-center gap-2 px-3 py-1 ml-4 border rounded-full text-[10px] font-mono uppercase tracking-widest transition-colors ${scrolled ? 'bg-background border-primary/5 text-primary/70' : 'bg-white/10 border-white/20 text-white/80 backdrop-blur-md'}`}>
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-[0_0_8px_#00D2D3]" />
+              Sistemas Online
+            </div>
+          </Link>
+
+          <nav className="hidden lg:flex items-center gap-8">
+            <Link to="/#servicos" className={`text-sm font-medium transition-colors ${scrolled ? 'text-primary/80 hover:text-secondary' : 'text-white/80 hover:text-white'}`}>Serviços</Link>
+            <Link to="/#sobre" className={`text-sm font-medium transition-colors ${scrolled ? 'text-primary/80 hover:text-secondary' : 'text-white/80 hover:text-white'}`}>Sobre</Link>
+            <Link to="/#atendimento" className={`text-sm font-medium transition-colors ${scrolled ? 'text-primary/80 hover:text-secondary' : 'text-white/80 hover:text-white'}`}>Área</Link>
+            <Link to="/faq" className={`text-sm font-medium transition-colors ${scrolled ? 'text-primary/80 hover:text-secondary' : 'text-white/80 hover:text-white'}`}>Dúvidas Frequentes</Link>
+          </nav>
+
+          <div className="hidden md:flex items-center gap-3">
+            <a 
+              href="tel:+5534999716592" 
+              className={`inline-flex items-center justify-center h-10 px-5 rounded-full font-bold text-sm hover:-translate-y-0.5 transition-all duration-300 shadow-sm ${scrolled ? 'bg-white text-primary border border-primary/10 hover:border-accent hover:bg-accent/5' : 'bg-white/10 text-white border border-white/20 backdrop-blur hover:bg-white/20'}`}
+            >
+              <Phone size={16} className={`mr-2 ${scrolled ? 'text-accent' : 'text-white'}`} /> Ligar
+            </a>
+            <a 
+              href={WP_LINK} 
+              target="_blank" 
+              rel="noreferrer"
+              className={`inline-flex items-center justify-center h-10 px-6 rounded-full font-medium text-sm hover:-translate-y-0.5 transition-all duration-300 ${scrolled ? 'bg-primary text-white hover:bg-secondary hover:shadow-lg' : 'bg-white text-[#030914] font-bold hover:bg-accent hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]'}`}
+            >
+              Orçamento
+            </a>
+          </div>
+
+          <button className={`md:hidden p-2 transition-colors ${scrolled ? 'text-primary' : 'text-white'}`} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden bg-white border-b border-primary/5 px-6 overflow-hidden rounded-b-2xl shadow-xl absolute w-full left-0 top-full"
+            >
+              <div className="flex flex-col gap-4 py-6">
+                <Link to="/#servicos" onClick={handleLinkClick} className="text-base font-bold text-primary">Serviços</Link>
+                <Link to="/#sobre" onClick={handleLinkClick} className="text-base font-bold text-primary">Sobre</Link>
+                <Link to="/#atendimento" onClick={handleLinkClick} className="text-base font-bold text-primary">Área</Link>
+                <Link to="/faq" onClick={handleLinkClick} className="text-base font-bold text-primary">Dúvidas Frequentes</Link>
+                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-primary/10">
+                  <a href="tel:+5534999716592" className="inline-flex items-center justify-center h-12 rounded-xl bg-background border border-primary/10 text-primary font-bold w-full hover:border-accent">
+                    <Phone size={20} className="mr-2 text-accent" /> Ligar Agora
+                  </a>
+                  <a href={WP_LINK} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center h-12 rounded-xl bg-primary text-white font-medium w-full">
+                    <MessageCircle size={20} className="mr-2 text-accent" /> WhatsApp
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+  );
+}
+
+function Footer() {
+  return (
+      <footer className="bg-primary text-white pt-24 pb-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/50 to-transparent" />
+        
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            <div className="lg:col-span-1">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-white rounded flex items-center justify-center overflow-hidden">
+                    <img src={LOGO_URL} alt="Clima Perfeito Logo" className="w-full h-full object-cover" />
+                </div>
+                <span className="font-display font-medium text-xl">Clima Perfeito</span>
+              </div>
+              <p className="text-white/60 mb-6 font-light">A temperatura ideal com precisão técnica e eficiência impecável. Sem improvisos.</p>
+              <div className="flex items-center gap-4">
+                <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-secondary transition-colors"><Instagram size={18} /></a>
+                <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-secondary transition-colors"><Facebook size={18} /></a>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-display font-bold mb-6 text-lg">Links Rápidos</h4>
+              <ul className="space-y-4 text-white/60">
+                <li><Link to="/#servicos" className="hover:text-accent transition-colors">Serviços Técnicos</Link></li>
+                <li><Link to="/#sobre" className="hover:text-accent transition-colors">Nossa Engenharia</Link></li>
+                <li><Link to="/#atendimento" className="hover:text-accent transition-colors">Área de Cobertura</Link></li>
+                <li><Link to="/faq" className="hover:text-accent transition-colors">Dúvidas Frequentes</Link></li>
+                <li><Link to="/#contato" className="hover:text-accent transition-colors">Fale Conosco</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-display font-bold mb-6 text-lg">Serviços Específicos</h4>
+              <ul className="space-y-4 text-white/60">
+                <li><Link to="/#servicos" className="hover:text-accent transition-colors">Instalação Residencial</Link></li>
+                <li><Link to="/#servicos" className="hover:text-accent transition-colors">Manutenção Preventiva</Link></li>
+                <li><Link to="/#servicos" className="hover:text-accent transition-colors">Higienização</Link></li>
+                <li><Link to="/#servicos" className="hover:text-accent transition-colors">Reparo Técnico</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-display font-bold mb-6 text-lg">Informações Legais</h4>
+              <ul className="space-y-4 text-white/60">
+                <li><span className="hover:text-accent transition-colors cursor-pointer">Política de Privacidade</span></li>
+                <li>CNPJ: 00.000.000/0001-00</li>
+                <li>Uberlândia - MG</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-white/40 text-sm">
+            <p>&copy; {new Date().getFullYear()} Clima Perfeito. Todos os direitos reservados.</p>
+            <p>Desenvolvido com excelência.</p>
+          </div>
+        </div>
+      </footer>
+  );
+}
+
+function Home() {
   const [formData, setFormData] = useState({
     nome: '',
     telefone: '',
@@ -57,180 +255,77 @@ export default function App() {
   
   const generatedUrl = `https://wa.me/${PHONE}?text=${encodeURIComponent(generatedText)}`;
 
-  const toggleFaq = (index: number) => {
-    setActiveFaq(activeFaq === index ? null : index);
-  };
-
   const services = [
     { icon: Wrench, title: "Instalação", desc: "Projetos residenciais e comerciais com layout impecável e precisão geométrica." },
     { icon: Shield, title: "Manutenção Preventiva", desc: "Antecipe o desgaste sistêmico e evite paradas repentinas dos equipamentos." },
     { icon: Droplets, title: "Limpeza e Higienização", desc: "Ar puro e contínuo, livre de ácaros, fungos e bactérias prejudiciais." },
     { icon: ThermometerSnowflake, title: "Carga de Gás", desc: "Ajuste milimétrico para o rendimento térmico máximo do seu ambiente." },
-    { icon: PenTool, title: "Conserto Avançado", desc: "Diagnóstico técnico aprofundado para placas eletrônicas e compressores." },
-    { icon: CheckCircle2, title: "Contrato Empresarial", desc: "Gestão técnica contínua focada em durabilidade para empresas e clínicas." }
-  ];
-
-  const faqs = [
-    { q: "Vocês atendem urgências?", a: "Sim, possuímos equipe especializada pronta para resolver interrupções críticas que não podem esperar, garantindo o retorno rápido do seu conforto." },
-    { q: "Emitem nota fiscal?", a: "Absolutamente. Todos os nossos serviços acompanham Nota Fiscal Eletrônica e relatório técnico detalhado da intervenção." },
-    { q: "Qual a garantia do serviço?", a: "Oferecemos garantia documentada de 1 ano para instalações novas e prazos rigorosos para reparos técnicos específicos." },
-    { q: "Atendem condomínios comerciais?", a: "Sim, somos especialistas em sistemas VRF/Multi-split e emitimos as ARTs e TRTs exigidas pela administração do condomínio." },
-    { q: "Com quais marcas trabalham?", a: "Somos capacitados nas marcas de elite do mercado tecnológico atual, englobando Daikin, Fujitsu, LG, Samsung, Midea e Carrier." },
-    { q: "Quanto tempo leva a instalação?", a: "Uma instalação padrão residencial é concluída em cerca de 2 a 3 horas, garantindo o máximo de limpeza e preservação do ambiente local." }
+    { icon: PenTool, title: "Conserto Avançado", desc: "Diagnóstico técnico aprofundado para placas eletrônicas e compressores." }
   ];
 
   return (
-    <div className="min-h-screen bg-background text-text font-sans selection:bg-accent selection:text-primary scroll-smooth relative">
-      {/* Global Film Grain Overlay - Pentagram/Awwwards touch */}
-      <div className="pointer-events-none fixed inset-0 z-[999] h-full w-full opacity-[0.035] mix-blend-multiply" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
+    <>
+      {/* ULTRA-CINEMATIC HERO */}
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden min-h-[85vh] lg:min-h-[95vh] flex items-center bg-[#020610] text-white">
+        
+        {/* Cinematic Background Image with Zoom */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          {/* Multiply overly for heavy contrast and darkness */}
+          <div className="absolute inset-0 bg-[#020610]/70 mix-blend-multiply z-10" />
+          
+          {/* Cold glowing ambient lights drifting */}
+          <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[600px] bg-accent/30 blur-[150px] rounded-full mix-blend-screen z-10 animate-[pulse_8s_ease-in-out_infinite]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[500px] bg-[#0057B7]/40 blur-[150px] rounded-full mix-blend-screen z-10 animate-[pulse_10s_ease-in-out_infinite_reverse]" />
 
-      <SignatureLine />
+          {/* Vignette & Fade to next section */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#020610_100%)] opacity-80 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-[#020610]/80 z-10" />
+          
+          {/* Subtle tech grid over the image */}
+          <div className="absolute inset-0 z-10 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-      {/* Floating CTA */}
-      <a 
-        href={WP_LINK} 
-        target="_blank" 
-        rel="noreferrer"
-        className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-[#128C7E] to-[#25D366] text-white rounded-full shadow-[0_15px_30px_rgba(37,211,102,0.3)] hover:shadow-[0_20px_40px_rgba(37,211,102,0.5)] hover:-translate-y-1 transition-all duration-300 before:absolute before:inset-0 before:bg-white/20 before:rounded-full before:opacity-0 hover:before:opacity-100 border border-white/20 backdrop-blur-sm group"
-        aria-label="Falar no WhatsApp"
-      >
-        <span className="absolute inset-0 rounded-full animate-ping bg-[#25D366] opacity-20" />
-        <MessageCircle size={32} className="relative z-10 group-hover:scale-110 transition-transform duration-300" />
-      </a>
-
-      {/* HEADER */}
-      <header className="fixed top-[3px] left-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-primary/5 transition-all">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded overflow-hidden">
-               <img src={LOGO_URL} alt="Clima Perfeito" className="w-full h-full object-cover" />
-            </div>
-            <span className="font-display font-medium text-xl tracking-tight text-primary">Clima Perfeito</span>
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1 ml-4 bg-background border border-primary/5 rounded-full text-[10px] font-mono uppercase tracking-widest text-primary/70">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-              Sistemas Online
-            </div>
-          </div>
-
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#servicos" className="text-sm font-medium hover:text-secondary transition-colors">Serviços</a>
-            <a href="#sobre" className="text-sm font-medium hover:text-secondary transition-colors">Sobre</a>
-            <a href="#atendimento" className="text-sm font-medium hover:text-secondary transition-colors">Área de atendimento</a>
-            <a href="#contato" className="text-sm font-medium hover:text-secondary transition-colors">Contato</a>
-          </nav>
-
-          <a 
-            href={WP_LINK} 
-            target="_blank" 
-            rel="noreferrer"
-            className="hidden md:inline-flex items-center justify-center h-10 px-6 rounded-full bg-primary text-white font-medium text-sm hover:bg-secondary hover:shadow-lg transition-all duration-300"
-          >
-            Solicitar orçamento
-          </a>
-
-          <button className="md:hidden p-2 text-primary" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Heavily blurred cinematic AC / Ventilation image */}
+          <img 
+             src="https://images.unsplash.com/photo-1527018263595-5ae869094771?q=80&w=2600&auto=format&fit=crop" 
+             alt="Cinematic AC Unit" 
+             className="w-full h-full object-cover opacity-20 blur-[10px] animate-slow-zoom scale-110"
+          />
         </div>
 
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="md:hidden bg-white border-b border-primary/5 px-6 overflow-hidden"
-            >
-              <div className="flex flex-col gap-4 py-6">
-                <a href="#servicos" onClick={() => setIsMenuOpen(false)} className="text-base font-medium">Serviços</a>
-                <a href="#sobre" onClick={() => setIsMenuOpen(false)} className="text-base font-medium">Sobre</a>
-                <a href="#atendimento" onClick={() => setIsMenuOpen(false)} className="text-base font-medium">Área de atendimento</a>
-                <a href="#contato" onClick={() => setIsMenuOpen(false)} className="text-base font-medium">Contato</a>
-                <a href={WP_LINK} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center h-12 rounded-lg bg-primary text-white font-medium w-full mt-2">
-                  WhatsApp Agora
-                </a>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
-
-      {/* HERO */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-        <NoiseTexture />
-        <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#00D2D310_1px,transparent_1px),linear-gradient(to_bottom,#00D2D310_1px,transparent_1px)] bg-[size:4rem_4rem] mix-blend-multiply opacity-[0.4]" />
-        
-        {/* Ambient Glows - Editorial Tech touch */}
-        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-accent/20 rounded-full blur-[140px] pointer-events-none mix-blend-screen" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-secondary/15 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
-
-        <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12 lg:gap-20">
-          <div className="flex-1 w-full">
-            <FadeIn>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-secondary/20 shadow-sm rounded-full text-[11px] font-semibold tracking-wider uppercase text-secondary mb-6 relative hover:border-accent transition-colors duration-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping absolute left-3 opacity-75" />
-                <span className="w-1.5 h-1.5 rounded-full bg-accent ml-[2px]" />
-                <span className="ml-1">Alto Padrão em Climatização</span>
-              </div>
-            </FadeIn>
-            
-            <FadeIn delay={0.1}>
-              <span className="flex items-center gap-3 text-primary/70 font-mono text-xs md:text-sm uppercase tracking-[0.3em] mb-4">
-                <span className="w-10 h-[2px] bg-accent"></span>
-                Engenharia Térmica
+        <div className="max-w-5xl mx-auto px-6 relative z-20 flex flex-col items-center justify-center text-center">
+          
+          <FadeIn>
+            <div className="inline-flex items-center gap-2 px-5 py-2 block backdrop-blur-md border border-white/20 shadow-2xl rounded-full text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase text-white mb-8 relative hover:bg-white/10 transition-all duration-300">
+              <span className="w-2 h-2 rounded-full bg-accent animate-ping absolute left-5 opacity-75" />
+              <span className="w-2 h-2 rounded-full bg-accent ml-[2px] shadow-[0_0_12px_#00D2D3]" />
+              <span className="ml-2 text-white/90">Especialistas em Climatização Premium</span>
+            </div>
+          </FadeIn>
+          
+          <FadeIn delay={0.1}>
+            <h1 className="font-display font-bold text-5xl sm:text-6xl md:text-7xl lg:text-[7.5rem] leading-[1.05] tracking-tighter text-white mb-6 max-w-[1000px] drop-shadow-2xl">
+              O Clima Perfeito. <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#00D2D3] to-white relative inline-block mt-2 sm:mt-4 pb-2 sm:pb-4 animate-gradient-x opacity-90 drop-shadow-[0_0_40px_rgba(0,210,211,0.4)]">
+                Em suas mãos.
               </span>
-              <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-[5.5rem] leading-[0.98] tracking-tighter text-primary mb-6 max-w-[800px]">
-                Controle o clima. <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-br from-primary via-secondary to-[#0057B7] relative inline-block mt-2">
-                  Domine o ambiente.
-                </span>
-              </h1>
-            </FadeIn>
-            
-            <FadeIn delay={0.2}>
-              <p className="font-sans text-lg md:text-xl text-text/80 max-w-lg leading-relaxed font-light mb-10">
-                Esqueça o calor e os problemas recorrentes.<br/>
-                Entregamos a temperatura exata, no silêncio absoluto.
-              </p>
-            </FadeIn>
+            </h1>
+          </FadeIn>
+          
+          <FadeIn delay={0.2} className="w-full">
+            <p className="font-sans text-lg md:text-2xl text-white/70 max-w-2xl mx-auto leading-relaxed font-light mt-4 sm:mt-6 mb-12 drop-shadow-md">
+              Elevamos o padrão do conforto térmico em Uberlândia e região. Instalação, manutenção e climatização no absoluto <strong className="font-semibold text-white">silêncio.</strong>
+            </p>
+          </FadeIn>
 
-            <FadeIn delay={0.3} className="flex flex-col sm:flex-row gap-4 mb-16">
-              <a href={WP_LINK} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 h-14 px-8 rounded-full bg-primary text-white font-medium text-base hover:bg-secondary hover:shadow-[0_15px_30px_rgba(0,87,183,0.3)] transition-all duration-300">
-                WhatsApp agora <ArrowRight size={18} />
-              </a>
-              <a href="#servicos" className="inline-flex items-center justify-center gap-2 h-14 px-8 rounded-full bg-white text-primary border border-primary/20 font-medium text-base hover:border-primary hover:bg-background transition-all duration-300">
-                Ver serviços
-              </a>
-            </FadeIn>
-
-            <FadeIn delay={0.4}>
-              <div className="flex flex-wrap items-center gap-6 pt-8 border-t border-primary/10 text-sm font-medium text-primary/70">
-                <span className="flex items-center gap-2"><CheckCircle2 size={16} className="text-secondary" /> 10 Anos de Experiência</span>
-                <span className="flex items-center gap-2"><CheckCircle2 size={16} className="text-secondary" /> +2000 Atendimentos</span>
-                <span className="flex items-center gap-2"><CheckCircle2 size={16} className="text-secondary" /> Garantia de 1 Ano</span>
-              </div>
-            </FadeIn>
-          </div>
-
-          <div className="w-full md:w-[45%] lg:w-1/2">
-            <FadeIn delay={0.2} className="relative group">
-              <div className="absolute top-6 left-6 w-full h-full border border-primary/10 rounded-2xl bg-secondary/5 -z-10 transition-all duration-700 ease-out group-hover:top-8 group-hover:left-8" />
-              <div className="bg-white border border-primary/10 rounded-2xl p-2 shadow-[0_30px_60px_-15px_rgba(10,25,47,0.15)] relative overflow-hidden aspect-[4/5] sm:aspect-square md:aspect-[3/4] xl:aspect-[4/5] flex flex-col">
-                <div className="w-full h-full bg-[#E2E8F0] rounded-xl flex items-center justify-center border-2 border-dashed border-[#CBD5E1] text-[#64748B] font-medium text-center p-6">
-                  Foto do técnico trabalhando
-                </div>
-                <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-md border border-primary/10 rounded-xl p-4 flex items-center justify-between shadow-xl">
-                  <div>
-                    <span className="block text-[10px] uppercase tracking-widest text-text/50 font-bold mb-1">Diagnóstico</span>
-                    <strong className="block text-primary font-display">Precisão Milimétrica</strong>
-                  </div>
-                  <div className="w-10 h-10 bg-background rounded-full flex items-center justify-center text-accent">
-                    <ThermometerSnowflake size={20} />
-                  </div>
-                </div>
-              </div>
-            </FadeIn>
-          </div>
+          <FadeIn delay={0.3} className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-16 w-full px-4">
+            <a href="tel:+5534999716592" className="inline-flex items-center justify-center h-16 rounded-full bg-white text-[#030914] font-bold text-lg px-8 hover:bg-accent hover:text-white hover:scale-105 transition-all duration-300 w-full sm:w-auto shadow-[0_0_40px_rgba(255,255,255,0.15)] group">
+              Ligar Agora <Phone size={22} className="ml-3 group-hover:rotate-12 transition-transform" />
+            </a>
+            <a href={WP_LINK} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 h-16 px-8 rounded-full bg-white/10 text-white border border-white/20 font-bold text-lg hover:border-accent hover:bg-white/20 transition-all duration-300 w-full sm:w-auto backdrop-blur-md overflow-hidden relative group">
+               <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+               <MessageCircle size={22} className="text-white" /> Falar no WhatsApp
+            </a>
+          </FadeIn>
         </div>
       </section>
 
@@ -281,11 +376,6 @@ export default function App() {
                   {/* Hover cyan line */}
                   <div className="absolute top-0 left-0 w-0 h-[2px] bg-accent transition-all duration-700 ease-out group-hover:w-full z-10" />
                   
-                  <div className="w-full h-32 bg-[#0A192F] border border-dashed border-white/20 rounded-xl mb-6 flex items-center justify-center text-white/30 font-mono text-xs text-center px-4 relative overflow-hidden group-hover:border-accent/30 transition-colors">
-                    <span className="absolute top-2 left-2 text-[8px] opacity-50">CAM_0{i + 1}</span>
-                    &lt; Visualização: {svc.title.toLowerCase()} /&gt;
-                  </div>
-
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 bg-white/10 rounded-xl border border-white/5 flex items-center justify-center text-accent group-hover:scale-110 group-hover:bg-accent group-hover:text-primary transition-all duration-500 shrink-0">
                       <svc.icon size={22} strokeWidth={1.5} />
@@ -297,19 +387,6 @@ export default function App() {
               </FadeIn>
             ))}
           </div>
-
-          <FadeIn delay={0.4}>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden backdrop-blur-md">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-accent opacity-10 blur-[80px]" />
-              <div className="relative z-10">
-                <h3 className="font-display font-bold text-2xl md:text-3xl text-white mb-2">Deseja um projeto de alta complexidade?</h3>
-                <p className="text-white/60">Sistemas VRF, Dutos Inverter e climatização de grandes áreas comerciais.</p>
-              </div>
-              <a href={WP_LINK} target="_blank" rel="noreferrer" className="relative z-10 shrink-0 inline-flex items-center justify-center h-14 px-8 rounded-full bg-accent text-primary font-bold hover:bg-white hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(0,210,211,0.3)]">
-                Falar com Engenharia
-              </a>
-            </div>
-          </FadeIn>
         </div>
       </section>
 
@@ -348,28 +425,30 @@ export default function App() {
         </div>
       </section>
 
-      {/* GALERIA (ANTES E DEPOIS) */}
-      <section className="py-24 bg-white overflow-hidden">
+      {/* GALERIA / NOSSOS TRABALHOS */}
+      <section className="py-24 bg-background overflow-hidden border-t border-primary/5">
         <div className="max-w-7xl mx-auto px-6">
           <FadeIn>
             <div className="mb-16">
-              <span className="font-sans text-xs font-semibold uppercase tracking-widest text-secondary mb-3 block">Nosso Trabalho</span>
-              <h2 className="font-display font-bold text-4xl md:text-5xl text-primary">Resultados na prática.</h2>
+              <span className="font-sans text-xs font-semibold uppercase tracking-widest text-secondary mb-3 block">Galeria</span>
+              <h2 className="font-display font-bold text-4xl md:text-5xl text-primary">Nossos Trabalhos</h2>
             </div>
           </FadeIn>
           
-          <div className="flex gap-6 w-full overflow-x-auto pb-8 snap-x snap-mandatory hide-scroll">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { id: 1, text: "Antes", desc: "Instalação Residencial de Alto Padrão - Sala de Estar" },
-              { id: 2, text: "Depois", desc: "Instalação Residencial de Alto Padrão - Sala de Estar" },
-              { id: 3, text: "Antes", desc: "Manutenção Preventiva - Escritório Corporativo" },
-              { id: 4, text: "Depois", desc: "Manutenção Preventiva - Escritório Corporativo" }
-            ].map((item, i) => (
-              <FadeIn key={item.id} delay={i * 0.1} className="shrink-0 w-[85vw] sm:w-[500px] snap-center">
-                <div className="relative rounded-2xl overflow-hidden aspect-video bg-white p-2 border border-primary/10 group">
-                  <div className="w-full h-full bg-[#E2E8F0] rounded-xl border-2 border-dashed border-[#CBD5E1] flex flex-col items-center justify-center text-[#64748B] transition-transform duration-700 group-hover:scale-[1.02]">
-                    <span className="font-display font-bold text-2xl mb-2">{item.text}</span>
-                    <span className="text-sm px-6 text-center">{item.desc}</span>
+              { id: 1, src: "https://69d917505386887646d2db3b.imgix.net/Capturar99.PNG", alt: "Finalização de Projeto" },
+              { id: 2, src: "https://69d917505386887646d2db3b.imgix.net/3-3-1024x1024.png", alt: "Limpeza Profunda" },
+              { id: 3, src: "https://69d917505386887646d2db3b.imgix.net/s-k-enterprises-noida-sector-63-delhi-ac-repair-and-services-oqauxej16h.webp", alt: "Manutenção Preventiva" },
+              { id: 4, src: "https://69d917505386887646d2db3b.imgix.net/shutterstock_325390658.jpg", alt: "Diagnóstico Técnico" }
+            ].map((img, i) => (
+              <FadeIn key={img.id} delay={i * 0.1}>
+                <div className="relative rounded-2xl overflow-hidden aspect-square border border-primary/5 group shadow-sm bg-white">
+                  <img src={img.src} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                    <span className="text-white font-display font-medium translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      {img.alt}
+                    </span>
                   </div>
                 </div>
               </FadeIn>
@@ -391,20 +470,24 @@ export default function App() {
           </FadeIn>
           
           <div className="grid md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
+            {[
+              { nome: "João Pedro Alves", local: "Uberlândia - MG", texto: "Atendimento impecável! O técnico chegou no horário exato, trabalhou em silêncio e deixou o ambiente completamente limpo após a instalação. Recomendo de olhos fechados." },
+              { nome: "Maria Clara Souza", local: "Araguari - MG", texto: "Fiquei impressionada com a velocidade. Ontem o ar parou, entrei em contato, e hoje cedo a manutenção já estava finalizada com transparência e preço justo." },
+              { nome: "Roberto Freitas", local: "Uberlândia - MG", texto: "Profissionalismo raro no mercado. A limpeza e higienização resolveu o problema de gotejamento que eu tinha há meses. Excelente serviço." }
+            ].map((review, i) => (
               <FadeIn key={i} delay={i * 0.1}>
                 <div className="bg-white/5 border border-white/10 p-8 rounded-2xl backdrop-blur-md">
                   <div className="flex text-accent mb-6">
                     {[1, 2, 3, 4, 5].map((star) => <Star key={star} size={18} fill="currentColor" /> )}
                   </div>
-                  <p className="text-white/80 leading-relaxed mb-8 italic">"Atendimento impecável! O técnico chegou no horário exato, trabalhou em silêncio e deixou o ambiente completamente limpo após a instalação. Recomendo de olhos fechados."</p>
+                  <p className="text-white/80 leading-relaxed mb-8 italic">"{review.texto}"</p>
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white/10 border border-white/20 rounded-full flex flex-col items-center justify-center shrink-0 text-[10px] text-white/50 font-medium leading-tight text-center">
-                      <span>Foto<br/>Cliente</span>
+                    <div className="w-12 h-12 bg-white/10 border border-white/20 rounded-full flex flex-col items-center justify-center shrink-0 text-white/50">
+                      <User size={20} />
                     </div>
                     <div>
-                      <strong className="block font-display text-lg">Cliente {i}</strong>
-                      <span className="text-sm text-white/50">Via Google Reviews</span>
+                      <strong className="block font-display text-lg">{review.nome}</strong>
+                      <span className="text-sm text-white/50">{review.local}</span>
                     </div>
                   </div>
                 </div>
@@ -424,7 +507,7 @@ export default function App() {
               </div>
               <h2 className="font-display font-bold text-4xl md:text-5xl text-primary mb-6">Área de Cobertura</h2>
               <p className="font-sans text-lg text-text/70 mb-8 max-w-md">
-                Atuamos em toda a região de <strong className="text-primary font-bold">Uberlândia</strong>, oferecendo deslocamento ágil para garantir a climatização quando você mais precisa.
+                Atuamos em <strong className="text-primary font-bold">Uberlândia, Araguari e região</strong>, oferecendo deslocamento ágil para garantir a climatização quando você mais precisa.
               </p>
               <div className="inline-flex items-center gap-3 px-6 py-3 bg-white border border-primary/10 rounded-full font-medium text-primary shadow-sm">
                 <CheckCircle2 size={20} className="text-accent" /> Serviço Local Prioritário
@@ -439,7 +522,7 @@ export default function App() {
                          <div className="w-24 h-24 bg-accent/20 rounded-full animate-ping absolute" />
                          <div className="w-12 h-12 bg-accent/40 rounded-full absolute" />
                          <MapPin size={36} className="text-secondary relative z-10 drop-shadow-md" fill="#F4F7F9" />
-                         <span className="font-display font-bold text-primary mt-2 relative z-10 bg-white/80 px-3 py-1 rounded backdrop-blur-sm border border-primary/10">Uberlândia-MG</span>
+                         <span className="font-display font-bold text-primary mt-2 relative z-10 bg-white/80 px-3 py-1 rounded backdrop-blur-sm border border-primary/10">Triângulo Mineiro</span>
                       </div>
                    </div>
                </div>
@@ -448,51 +531,8 @@ export default function App() {
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-24 bg-background border-t border-primary/5">
-        <div className="max-w-4xl mx-auto px-6">
-          <FadeIn>
-            <div className="text-center mb-16">
-              <h2 className="font-display font-bold text-4xl md:text-5xl text-primary">Perguntas Frequentes</h2>
-            </div>
-          </FadeIn>
-          
-          <div className="grid gap-4">
-            {faqs.map((faq, index) => (
-              <FadeIn key={index} delay={index * 0.1}>
-                <div 
-                  className={`bg-white border ${activeFaq === index ? 'border-accent shadow-md' : 'border-primary/10'} rounded-2xl overflow-hidden transition-all duration-300`}
-                >
-                  <button 
-                    onClick={() => toggleFaq(index)}
-                    className="w-full px-6 py-6 text-left flex items-center justify-between font-display font-bold text-lg md:text-xl text-primary hover:text-secondary transition-colors"
-                  >
-                    <span>{faq.q}</span>
-                    <ChevronDown size={24} className={`shrink-0 transition-transform duration-300 ${activeFaq === index ? 'rotate-180 text-accent' : 'text-primary/30'}`} />
-                  </button>
-                  <AnimatePresence>
-                    {activeFaq === index && (
-                      <motion.div 
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                      >
-                        <div className="px-6 pb-6 pt-0 text-text/70 leading-relaxed font-sans">
-                          {faq.a}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CONTATO */}
       <section id="contato" className="py-24 bg-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-secondary/5 rounded-full blur-[120px] -z-10 translate-x-1/3 -translate-y-1/3" />
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-secondary/5 rounded-full blur-[90px] -z-10 translate-x-1/3 -translate-y-1/3" />
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
             <FadeIn>
@@ -577,8 +617,7 @@ export default function App() {
                       <option>Manutenção Preventiva</option>
                       <option>Limpeza e Higienização</option>
                       <option>Reparo Técnico / Conserto</option>
-                      <option>Contratos para Empresas</option>
-                      <option>Projeto de Alta Complexidade (VRF/Dutos)</option>
+                      <option>Outro</option>
                     </select>
                   </div>
 
@@ -618,63 +657,83 @@ export default function App() {
           </div>
         </div>
       </section>
+    </>
+  );
+}
 
-      {/* FOOTER */}
-      <footer className="bg-primary text-white pt-24 pb-8 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-accent/50 to-transparent" />
+function FaqPage() {
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  const toggleFaq = (index: number) => {
+    setActiveFaq(activeFaq === index ? null : index);
+  };
+
+  const faqs = [
+    { q: "Quais serviços a Clima Perfeito oferece?", a: "Oferecemos instalação residencial e comercial, manutenção preventiva para evitar desgaste, limpeza e higienização antibacteriana, carga de gás para máximo rendimento térmico e conserto avançado de placas e compressores." },
+    { q: "Em quais cidades vocês atendem?", a: "Temos foco prioritário de deslocamento e atendimento nas cidades de Uberlândia, Araguari e em toda a região próxima garantindo agilidade técnica." },
+    { q: "A empresa possui registro e Responsabilidade Técnica?", a: "Sim, o engenheiro responsável possui cadastro e filiação no Conselho Regional dos Técnicos Industriais (CRT) e Conselho Federal dos Técnicos Industriais (CFT). Assinamos laudos e assumimos a Responsabilidade Técnica (RT), inclusive para projetos em hospitais, clínicas e empresas." },
+    { q: "Vocês trabalham com contratos para empresas?", a: "Sim, trabalhamos com contratos de prestação de serviços voltados para clientes corporativos e empresas, garantindo segurança jurídica, manutenções regulares e PMOC." },
+    { q: "A empresa oferece garantias e emite Nota Fiscal?", a: "Sim, todos os nossos serviços são executados com segurança legal. Nós emitimos nota fiscal para a proteção do cliente e oferecemos garantia no serviço prestado." },
+    { q: "Como solicito um orçamento rápido?", a: "A melhor forma é clicando no botão para o nosso WhatsApp (34) 99971-6592 informando o que você precisa." },
+  ];
+
+  return (
+    <div className="pt-32 pb-24 min-h-[70vh] bg-background">
+      <div className="max-w-3xl mx-auto px-6">
+        <FadeIn>
+          <div className="text-center mb-16">
+            <span className="font-sans text-xs font-semibold uppercase tracking-widest text-secondary mb-3 block">Central de Ajuda</span>
+            <h1 className="font-display font-bold text-4xl md:text-5xl text-primary mb-6">Dúvidas Frequentes</h1>
+            <p className="text-text/70 text-lg max-w-xl mx-auto">
+              Reunimos as respostas para as principais dúvidas sobre nossos serviços em Uberlândia, Araguari e região.
+            </p>
+          </div>
+        </FadeIn>
         
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-            <div className="lg:col-span-1">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-white rounded flex items-center justify-center overflow-hidden">
-                    <img src={LOGO_URL} alt="Clima Perfeito Logo" className="w-full h-full object-cover" />
-                </div>
-                <span className="font-display font-medium text-xl">Clima Perfeito</span>
+        <div className="grid gap-4">
+          {faqs.map((faq, index) => (
+            <FadeIn key={index} delay={index * 0.1}>
+              <div 
+                className={`bg-white border ${activeFaq === index ? 'border-accent shadow-md' : 'border-primary/10'} rounded-2xl overflow-hidden transition-all duration-300`}
+              >
+                <button 
+                  onClick={() => toggleFaq(index)}
+                  className="w-full px-6 py-6 text-left flex items-center justify-between font-display font-bold text-lg md:text-xl text-primary hover:text-secondary transition-colors"
+                >
+                  <span>{faq.q}</span>
+                  <ChevronDown size={24} className={`shrink-0 transition-transform duration-300 ${activeFaq === index ? 'rotate-180 text-accent' : 'text-primary/30'}`} />
+                </button>
+                <AnimatePresence>
+                  {activeFaq === index && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                    >
+                      <div className="px-6 pb-6 pt-0 text-text/70 leading-relaxed font-sans">
+                        {faq.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-              <p className="text-white/60 mb-6 font-light">A temperatura ideal com precisão técnica e eficiência impecável. Sem improvisos.</p>
-              <div className="flex items-center gap-4">
-                <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-secondary transition-colors"><Instagram size={18} /></a>
-                <a href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-secondary transition-colors"><Facebook size={18} /></a>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-display font-bold mb-6 text-lg">Links Rápidos</h4>
-              <ul className="space-y-4 text-white/60">
-                <li><a href="#servicos" className="hover:text-accent transition-colors">Serviços Técnicos</a></li>
-                <li><a href="#sobre" className="hover:text-accent transition-colors">Nossa Engenharia</a></li>
-                <li><a href="#atendimento" className="hover:text-accent transition-colors">Área de Cobertura</a></li>
-                <li><a href="#contato" className="hover:text-accent transition-colors">Fale Conosco</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-display font-bold mb-6 text-lg">Serviços Específicos</h4>
-              <ul className="space-y-4 text-white/60">
-                <li><a href="#" className="hover:text-accent transition-colors">Instalação Residencial</a></li>
-                <li><a href="#" className="hover:text-accent transition-colors">Manutenção Preventiva</a></li>
-                <li><a href="#" className="hover:text-accent transition-colors">Manutenção Corretiva</a></li>
-                <li><a href="#" className="hover:text-accent transition-colors">Contrato Empresarial</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-display font-bold mb-6 text-lg">Informações Legais</h4>
-              <ul className="space-y-4 text-white/60">
-                <li><a href="#" className="hover:text-accent transition-colors">Política de Privacidade</a></li>
-                <li>CNPJ: 00.000.000/0001-00</li>
-                <li>Uberlândia - MG</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-white/40 text-sm">
-            <p>&copy; {new Date().getFullYear()} Clima Perfeito. Todos os direitos reservados.</p>
-            <p>Desenvolvido com excelência.</p>
-          </div>
+            </FadeIn>
+          ))}
         </div>
-      </footer>
+
+        <FadeIn delay={0.4} className="mt-16 text-center">
+          <p className="text-text/70 mb-6">Não encontrou o que procurava?</p>
+          <a 
+            href={WP_LINK} 
+            target="_blank" 
+            rel="noreferrer"
+            className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-primary text-white font-medium hover:bg-secondary transition-colors"
+          >
+            Fale conosco no WhatsApp
+          </a>
+        </FadeIn>
+          <p className="text-text/30 text-[10px] mt-12 text-center">*As avaliações e dados do site são de caráter ilustrativo.</p>
+      </div>
     </div>
   );
 }
